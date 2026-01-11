@@ -1,0 +1,54 @@
+
+# 🗺️ Guana Go: Arquitectura Técnica Pro (V3.0)
+
+## 🧠 1. El Cerebro (Data Flow - Proxy Security)
+Para garantizar la integridad y seguridad, la App no se conecta directamente a Airtable.
+1. **App**: Envía peticiones firmadas con un `actionID` a **Make.com**.
+2. **Make.com (Proxy)**: 
+   - Inyecta las API Keys de forma segura.
+   - Realiza cálculos de agregación (ej: sumar cupos ocupados).
+   - Registra transacciones en el Ledger de Hedera.
+3. **Tablas Reales (Airtable SAI)**:
+   - `ServiciosTuristicos SAI`: Maestro de tours, precios y capacidad.
+   - `Directorio SAI`: Comercios y restaurantes para el buscador.
+   - `Taxis SAI`: Tarifas oficiales por zona.
+   - `Procedimientos Rag`: Base de conocimiento para el asistente IA.
+
+## 📦 2. Sistema de Inventario y Cupos
+El inventario es dinámico y se calcula en el servidor (Make) bajo esta lógica:
+- **Disponibilidad** = `Capacidad_Diaria` - `Cupos_Ocupados`.
+- **Validación Preventiva**: El DatePicker bloquea fechas donde `Disponibilidad <= 0`.
+- **Atomicidad**: Al confirmar pago, el flujo Make suma `personas_reservadas` al campo `Cupos_Ocupados` inmediatamente.
+
+## 🤖 3. Inteligencia Artificial (RAG Logístico)
+El Chatbot "Guana" utiliza **Retrieval-Augmented Generation**:
+- **Query**: El mensaje del usuario se envía a Make.
+- **Contexto**: Make busca en la tabla `Procedimientos Rag` palabras clave (cancelación, seguro, mora).
+- **Prompt**: El modelo (Gemini) recibe el texto del SOP oficial como "Base de Verdad" antes de responder.
+
+## 📍 4. Estructura de Navegación y Rutas
+
+### 🟢 Nivel 1: Turista (público)
+- `HOME`: Buscador (Directorio SAI) y Categorías de Tours.
+- `MAP`: **[SUSPENDIDO TEMPORALMENTE]** Se muestra placeholder informativo.
+- `WALLET`: Gestión de tokens $GUANA y fidelización.
+- `CART/CHECKOUT`: Flujo de reserva con notarización Hedera.
+
+### 🔵 Nivel 2: Partner (Operador Verificado)
+- `DASHBOARD`: Métricas de ventas y acceso a servicios.
+- `RESERVATIONS`: Lista de clientes con control de estado (Confirmar/Cancelar).
+- `OPERATIONS`: Escáner QR para canje de servicios en muelle/hotel.
+- `PAYMENTS`: Historial de liquidaciones y saldo para reventa.
+
+### 🟣 Nivel 3: Super Admin
+- `ADMIN_DASHBOARD`: Salud del sistema (Usuarios totales, Ingresos COP).
+- `ADMIN_USERS`: Aprobación manual de nuevos operadores.
+- `ADMIN_SERVICES`: Control de calidad y visibilidad del catálogo global.
+- `ADMIN_FINANCE`: Auditoría de canjes de tokens y pagos.
+
+## ⚠️ 5. Nota sobre Mapas y Geolocalización
+La integración con **Mapbox GL JS** y la API de **Geolocalización** nativa del navegador han sido suspendidas en esta versión para optimizar el rendimiento inicial y simplificar el flujo de despliegue. Se planea su reactivación en la V4.0 mediante desarrollo en entorno local (Visual Studio).
+
+## 🛡️ 6. Blockchain (Auditoría Inmutable)
+Toda reserva confirmada genera un registro en **Hedera Network**.
+- El usuario recibe un `transactionID` verificable en **HashScan**.
