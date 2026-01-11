@@ -16,8 +16,15 @@ const distPath = path.join(__dirname, 'dist');
 console.log(`📁 Sirviendo desde: ${distPath}`);
 console.log(`📁 Existe dist: ${fs.existsSync(distPath)}`);
 
+if (fs.existsSync(distPath)) {
+  console.log(`📂 Archivos en dist:`, fs.readdirSync(distPath));
+}
+
 app.use(express.json());
-app.use(express.static(distPath));
+app.use(express.static(distPath, { 
+  maxAge: '1h',
+  etag: false 
+}));
 
 // API proxy para Airtable/Make Directory
 app.post('/api/directory', async (req, res) => {
@@ -38,10 +45,14 @@ app.post('/api/directory', async (req, res) => {
 // SPA fallback - servir index.html para rutas no encontradas
 app.get('*', (req, res) => {
     const indexPath = path.join(distPath, 'index.html');
+    console.log(`📄 Intentando servir: ${indexPath}`);
+    console.log(`📄 Existe: ${fs.existsSync(indexPath)}`);
     if (fs.existsSync(indexPath)) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.sendFile(indexPath);
     } else {
-        res.status(404).json({ error: `index.html no encontrado en ${indexPath}` });
+        console.error(`❌ index.html no encontrado en ${indexPath}`);
+        res.status(404).json({ error: `index.html no encontrado en ${indexPath}`, distPath, indexPath });
     }
 });
 
