@@ -222,6 +222,7 @@ export enum AppRoute {
   GROUP_QUOTE = 'GROUP_QUOTE',
   MY_ITINERARY = 'MY_ITINERARY',
   DYNAMIC_ITINERARY = 'DYNAMIC_ITINERARY',
+  DIRECTORY = 'DIRECTORY',
 }
 
 export type UserRole = 'tourist' | 'partner' | 'admin';

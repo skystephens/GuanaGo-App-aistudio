@@ -25,16 +25,18 @@ interface DirectoryItem {
 }
 
 interface DirectoryMapboxProps {
-  activeCategory: string;
-  searchQuery: string;
+  activeCategory?: string;
+  searchQuery?: string;
 }
 
-const DirectoryMapbox: React.FC<DirectoryMapboxProps> = ({ activeCategory, searchQuery }) => {
+const DirectoryMapbox: React.FC<DirectoryMapboxProps> = ({ activeCategory = 'Todos', searchQuery = '' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedMarker, setSelectedMarker] = useState<DirectoryItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [directoryData, setDirectoryData] = useState<DirectoryItem[]>([]);
   const [filteredPlaces, setFilteredPlaces] = useState<DirectoryItem[]>([]);
+  const [internalCategory, setInternalCategory] = useState<string>(activeCategory || 'Todos');
+  const [internalSearch, setInternalSearch] = useState<string>(searchQuery || '');
 
   // Cargar datos de Airtable con fallback a datos locales
   useEffect(() => {
@@ -95,20 +97,20 @@ const DirectoryMapbox: React.FC<DirectoryMapboxProps> = ({ activeCategory, searc
     const filtered = directoryData.filter((place) => {
       const name = (place.nombre || place.name || '').toLowerCase();
       const category = (place.categoria || place.category || '').toLowerCase();
-      const matchesSearch = name.includes(searchQuery.toLowerCase());
+      const matchesSearch = name.includes(internalSearch.toLowerCase());
       
-      if (activeCategory === 'Todos') return matchesSearch;
-      if (activeCategory === 'Cajero') return matchesSearch && (category.includes('cajero') || category.includes('banco'));
-      if (activeCategory === 'Droguería') return matchesSearch && (category.includes('farmacia') || category.includes('droguería'));
-      if (activeCategory === 'Restaurante') return matchesSearch && category.includes('restaurante');
-      if (activeCategory === 'Hotel') return matchesSearch && (category.includes('hotel') || category.includes('hospedaje'));
+      if (internalCategory === 'Todos') return matchesSearch;
+      if (internalCategory === 'Cajero') return matchesSearch && (category.includes('cajero') || category.includes('banco'));
+      if (internalCategory === 'Droguería') return matchesSearch && (category.includes('farmacia') || category.includes('droguería'));
+      if (internalCategory === 'Restaurante') return matchesSearch && category.includes('restaurante');
+      if (internalCategory === 'Hotel') return matchesSearch && (category.includes('hotel') || category.includes('hospedaje'));
       
-      return matchesSearch && category.includes(activeCategory.toLowerCase());
+      return matchesSearch && category.includes(internalCategory.toLowerCase());
     });
 
     setFilteredPlaces(filtered);
     console.log(`📍 Displaying ${filtered.length} places`);
-  }, [activeCategory, searchQuery, directoryData]);
+  }, [internalCategory, internalSearch, directoryData]);
 
   return (
     <div className="relative w-full h-full bg-gradient-to-br from-emerald-50 to-blue-50 rounded-3xl overflow-hidden">
