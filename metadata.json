@@ -1,0 +1,7 @@
+{
+  "name": "Guana Go",
+  "description": "Tu asistente de viaje y reservas en San Andrés Isla.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
