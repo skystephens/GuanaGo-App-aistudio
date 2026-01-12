@@ -42,6 +42,7 @@ import AdminServices from './pages/admin/AdminServices';
 
 import Navigation from './components/Navigation';
 import GuanaChatbot from './components/GuanaChatbot';
+import DirectoryMapbox from './components/DirectoryMapbox';
 import { AppRoute, UserRole } from './types';
 import { GUANA_LOGO } from './constants';
 
@@ -117,6 +118,7 @@ const App: React.FC = () => {
       case AppRoute.CHECKOUT: return <Checkout onBack={goBack} onNavigate={navigateTo} isAuthenticated={isAuthenticated} />;
       case AppRoute.WALLET: return <Wallet onNavigate={navigateTo} isAuthenticated={isAuthenticated} onLogin={() => navigateTo(AppRoute.PROFILE)} />;
       case AppRoute.INTERACTIVE_MAP: return <InteractiveMap onBack={goBack} />;
+      case AppRoute.DIRECTORY: return <DirectoryMapbox />;
       case AppRoute.RESTAURANT_MAP: return <MapboxRestaurants onBack={goBack} />;
       case AppRoute.TOUR_LIST: return <TourList onBack={goBack} onNavigate={navigateTo} />;
       case AppRoute.HOTEL_LIST: return <HotelList onBack={goBack} onNavigate={navigateTo} />;
